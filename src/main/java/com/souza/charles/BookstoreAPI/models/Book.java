@@ -1,6 +1,5 @@
 package com.souza.charles.BookstoreAPI.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
