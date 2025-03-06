@@ -1,5 +1,6 @@
 package com.souza.charles.BookstoreAPI.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -22,6 +23,8 @@ public class Author implements Serializable {
     @Column(nullable = false, unique = false)
     private String nationality;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
     private Set<Book> books = new HashSet<>();
 
     public Author() {

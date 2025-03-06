@@ -1,5 +1,6 @@
 package com.souza.charles.BookstoreAPI.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -20,6 +21,9 @@ public class LegalDeposit implements Serializable {
     @Column(nullable = false, unique = true)
     private String country;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToOne
+    @JoinColumn(name = "book_id")
     private Book book;
 
     public LegalDeposit() {

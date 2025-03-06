@@ -1,5 +1,6 @@
 package com.souza.charles.BookstoreAPI.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -25,8 +26,15 @@ public class Book implements Serializable {
     @Column(nullable = false, unique = true)
     private String language;
 
+    @ManyToMany()
+    @JoinTable(name = "tb_book_author", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<Author> authors = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "publisher_id")
     private Publisher publisher;
+
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
     private LegalDeposit legalDeposit;
 
     public Book() {
