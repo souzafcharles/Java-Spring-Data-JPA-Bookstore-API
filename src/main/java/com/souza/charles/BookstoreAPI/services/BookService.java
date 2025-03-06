@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,7 +37,6 @@ public class BookService {
     @Autowired
     private LegalDepositRepository legalDepositRepository;
 
-
     @Transactional
     public BookResponseDTO create(@Valid BookRequestDTO dto) {
         Publisher publisher = publisherRepository.findById(dto.publisherId()).orElseThrow(() -> new IllegalArgumentException(BookstoreMessages.PUBLISHER_NOT_FOUND));
@@ -51,6 +51,7 @@ public class BookService {
 
         LegalDeposit legalDeposit = new LegalDeposit();
         legalDeposit.setDepositCode(dto.depositCodeRegistration());
+        legalDeposit.setCountry(dto.country().toUpperCase(Locale.ROOT));
         legalDeposit.setBook(book);
         legalDeposit = legalDepositRepository.save(legalDeposit);
 
@@ -95,6 +96,7 @@ public class BookService {
             legalDeposit.setBook(book);
         }
         legalDeposit.setDepositCode(dto.depositCodeRegistration());
+        legalDeposit.setCountry(dto.country().toUpperCase(Locale.ROOT));
         legalDepositRepository.save(legalDeposit);
 
         book.setLegalDeposit(legalDeposit);

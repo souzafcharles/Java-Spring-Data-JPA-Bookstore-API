@@ -14,5 +14,6 @@ public record BookRequestDTO(UUID id,
                              @NotBlank String language,
                              @NotNull UUID publisherId,
                              @NotNull Set<UUID> authorIds,
-                             @NotBlank String depositCodeRegistration) implements Serializable {
+                             @NotBlank String depositCodeRegistration,
+                             @NotBlank String country) implements Serializable {
 }
