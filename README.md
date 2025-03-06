@@ -3,7 +3,7 @@
 ![GitHub](https://img.shields.io/github/license/souzafcharles/Java-Spring-Data-JPA-Bookstore-API)
 ![GitHub last commit](https://img.shields.io/github/last-commit/souzafcharles/Java-Spring-Data-JPA-Bookstore-API)
 
-# Java Spring Data JPA | Bookstore-API
+# Java Spring Data JPA | Bookstore API
 
 ***
 
@@ -117,7 +117,6 @@ spring.jpa.show-sql=true
 - Call the environment loader at the project's entry point to ensure environment variables are available at runtime:
 
 ```java
-
 @SpringBootApplication
 public class BookstoreApiApplication {
 
@@ -242,3 +241,405 @@ INSERT INTO tb_book_author (book_id, author_id) VALUES
 ````
 
 ***
+
+# Backend Requirements Specification:
+
+## Requirements for `Book` Entity Class:
+
+- **Entity Mapping:**
+    - Define the `Book` class as an entity to represent a database table;
+    - Annotate the class with `@Entity` to designate it as a persistent entity;
+    - Use `@Table(name = "tb_book")` to map the entity to the database table named `tb_book`.
+
+- **Attributes and Annotations:**
+    - Declare attributes `id`, `title`, `isbn`, `pages`, `language`, `authors`, `publisher`, and `legalDeposit` to
+      represent the respective database columns;
+    - Annotate the `id` field with `@Id` and `@GeneratedValue(strategy = GenerationType.AUTO)` to specify it as the
+      primary key with an automatically generated value;
+    - Use `@Column(nullable = false, unique = true)` on `title`, `isbn`, and `language` to enforce unique and non-null
+      constraints;
+    - Apply `@Column(nullable = false)` on `pages` to ensure it is non-null;
+    - Establish a many-to-many relationship between `Book` and `Author` using `@ManyToMany` and `@JoinTable`, specifying
+      `joinColumns` and `inverseJoinColumns`;
+    - Configure the many-to-one relationship with `Publisher` using `@ManyToOne` and
+      `@JoinColumn(name = "publisher_id")`;
+    - Configure the one-to-one relationship with `LegalDeposit` using
+      `@OneToOne(mappedBy = "book", cascade = CascadeType.ALL)`.
+
+- **Accessors and Mutators:**
+    - Implement `getters` and `setters` for all attributes to facilitate data manipulation.
+
+- **Serializable Interface:**
+    - Ensure the entity implements the `Serializable` interface to enable object serialisation for transmission or
+      storage.
+
+- **Database Constraints and Relationships:**
+    - Ensure that the `title`, `isbn`, and `language` columns are unique and not blank;
+    - Ensure that the `pages` column enforces a non-null value;
+    - Define structured associations between `Book`, `Author`, `Publisher`, and `LegalDeposit` entities through
+      respective mappings.
+
+- **Constructor:**
+    - Implement a default constructor for the entity;
+    - Implement a parameterised constructor accepting a `BookRequestDTO`, a `Publisher`, a `Set<Author>`, and a
+      `LegalDeposit`.
+
+- **Equals and HashCode:**
+    - Override the `equals()` method to compare instances based on the `id` attribute;
+    - Override `hashCode()` to generate a consistent hash code using `Objects.hashCode(id)`.
+
+***
+
+## Requirements for `BookRequestDTO` Record Class:
+
+- **Record Definition:**
+    - Define the `BookRequestDTO` class as a record to represent a data transfer object (DTO);
+    - Ensure the class implements the `Serializable` interface to enable object serialisation for transmission or
+      storage.
+
+- **Attributes and Annotations:**
+    - Declare attributes `id`, `title`, `isbn`, `pages`, `language`, `publisherId`, `authorIds`,
+      `depositCodeRegistration`, and `country` to represent the respective data fields;
+    - Use `@NotBlank` on `title`, `isbn`, `language`, `depositCodeRegistration`, and `country` to enforce validation
+      constraints ensuring these fields are not null or empty;
+    - Apply `@NotNull` on `pages`, `publisherId`, and `authorIds` to ensure these fields are not null.
+
+- **Validation Constraints:**
+    - Ensure that the `title`, `isbn`, `language`, `depositCodeRegistration`, and `country` fields are not blank;
+    - Ensure that the `pages`, `publisherId`, and `authorIds` fields are not null.
+
+- **Serializable Interface:**
+    - Ensure the record implements the `Serializable` interface to enable object serialisation for transmission or
+      storage.
+
+***
+
+## Requirements for `BookResponseDTO` Record Class:
+
+- **Record Definition:**
+    - Define the `BookResponseDTO` class as a record to represent a data transfer object (DTO);
+    - Ensure the class implements the `Serializable` interface to enable object serialisation for transmission or
+      storage.
+
+- **Attributes and Annotations:**
+    - Declare attributes `id`, `title`, `isbn`, `pages`, `language`, `publisherId`, `authorIds`, and `depositCode` to
+      represent the respective data fields;
+    - Use `Optional<UUID>` for `publisherId` to handle possible null values;
+    - Use `Optional<String>` for `depositCode` to handle possible null values.
+
+- **Constructor:**
+    - Implement a constructor that accepts a `Book` entity as a parameter;
+    - Map the attributes from the `Book` entity to the corresponding fields in the `BookResponseDTO` record;
+    - Use `Optional.ofNullable` for nullable fields to ensure they are properly handled.
+
+- **Serializable Interface:**
+    - Ensure the record implements the `Serializable` interface to enable object serialisation for transmission or
+      storage.
+
+- **Data Mapping:**
+    - Ensure that the attributes of the `Book` entity are accurately mapped to the corresponding fields in the
+      `BookResponseDTO` record;
+    - Handle possible null values for `publisherId` and `depositCode` using `Optional.ofNullable`.
+
+***
+
+## Requirements for `Author` Entity Class:
+
+- **Entity Mapping:**
+    - Define the `Author` class as an entity to represent a database table;
+    - Annotate the class with `@Entity` to designate it as a persistent entity;
+    - Use `@Table(name = "tb_author")` to map the entity to the database table named `tb_author`.
+
+- **Attributes and Annotations:**
+    - Declare attributes `id`, `name`, `nationality`, and `books` to represent the respective database columns;
+    - Annotate the `id` field with `@Id` and `@GeneratedValue(strategy = GenerationType.AUTO)` to specify it as the
+      primary key with an automatically generated value;
+    - Use `@Column(nullable = false, unique = true)` on `name` to enforce unique and non-null constraints;
+    - Apply `@Column(nullable = false)` on `nationality` to ensure it is non-null;
+    - Establish a many-to-many relationship between `Author` and `Book` using
+      `@ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)`.
+
+- **Accessors and Mutators:**
+    - Implement `getters` and `setters` for all attributes to facilitate data manipulation.
+
+- **Serializable Interface:**
+    - Ensure the entity implements the `Serializable` interface to enable object serialisation for transmission or
+      storage.
+
+- **Database Constraints and Relationships:**
+    - Ensure that the `name` column is unique and not blank;
+    - Ensure that the `nationality` column is not blank;
+    - Define structured associations between `Author` and `Book` entities through respective mappings.
+
+- **Constructor:**
+    - Implement a default constructor for the entity.
+
+- **Equals and HashCode:**
+    - Override the `equals()` method to compare instances based on the `id` attribute;
+    - Override `hashCode()` to generate a consistent hash code using `Objects.hashCode(id)`.
+
+***
+
+## Requirements for `Publisher` Entity Class:
+
+- **Entity Mapping:**
+    - Define the `Publisher` class as an entity to represent a database table;
+    - Annotate the class with `@Entity` to designate it as a persistent entity;
+    - Use `@Table(name = "tb_publisher")` to map the entity to the database table named `tb_publisher`.
+
+- **Attributes and Annotations:**
+    - Declare attributes `id`, `name`, `country`, and `books` to represent the respective database columns;
+    - Annotate the `id` field with `@Id` and `@GeneratedValue(strategy = GenerationType.AUTO)` to specify it as the
+      primary key with an automatically generated value;
+    - Use `@Column(nullable = false, unique = true)` on `name` and `country` to enforce unique and non-null constraints;
+    - Establish a one-to-many relationship between `Publisher` and `Book` using
+      `@OneToMany(mappedBy = "publisher", fetch = FetchType.LAZY)`.
+
+- **Accessors and Mutators:**
+    - Implement `getters` and `setters` for all attributes to facilitate data manipulation.
+
+- **Serializable Interface:**
+    - Ensure the entity implements the `Serializable` interface to enable object serialisation for transmission or
+      storage.
+
+- **Database Constraints and Relationships:**
+    - Ensure that the `name` and `country` columns are unique and not blank;
+    - Define structured associations between `Publisher` and `Book` entities through respective mappings.
+
+- **Constructor:**
+    - Implement a default constructor for the entity.
+
+- **Equals and HashCode:**
+    - Override the `equals()` method to compare instances based on the `id` attribute;
+    - Override `hashCode()` to generate a consistent hash code using `Objects.hashCode(id)`.
+
+***
+
+## Requirements for `LegalDeposit` Entity Class:
+
+- **Entity Mapping:**
+    - Define the `LegalDeposit` class as an entity to represent a database table;
+    - Annotate the class with `@Entity` to designate it as a persistent entity;
+    - Use `@Table(name = "tb_legal_deposit")` to map the entity to the database table named `tb_legal_deposit`.
+
+- **Attributes and Annotations:**
+    - Declare attributes `id`, `depositCode`, `country`, and `book` to represent the respective database columns;
+    - Annotate the `id` field with `@Id` and `@GeneratedValue(strategy = GenerationType.AUTO)` to specify it as the
+      primary key with an automatically generated value;
+    - Use `@Column(nullable = false, unique = true)` on `depositCode` and `country` to enforce unique and non-null
+      constraints;
+    - Establish a one-to-one relationship between `LegalDeposit` and `Book` using `@OneToOne` and
+      `@JoinColumn(name = "book_id")`.
+
+- **Accessors and Mutators:**
+    - Implement `getters` and `setters` for all attributes to facilitate data manipulation.
+
+- **Serializable Interface:**
+    - Ensure the entity implements the `Serializable` interface to enable object serialisation for transmission or
+      storage.
+
+- **Database Constraints and Relationships:**
+    - Ensure that the `depositCode` and `country` columns are unique and not blank;
+    - Define structured associations between `LegalDeposit` and `Book` entities through respective mappings.
+
+- **Constructor:**
+    - Implement a default constructor for the entity.
+
+- **Equals and HashCode:**
+    - Override the `equals()` method to compare instances based on the `id` attribute;
+    - Override `hashCode()` to generate a consistent hash code using `Objects.hash(id, depositCode)`.
+
+***
+
+## Requirements for `Book` Repository Interface:
+
+- **Repository Definition:**
+    - Define the `BookRepository` interface to extend `JpaRepository`.
+    - Annotate the interface with `@Repository` to designate it as a repository.
+
+- **Type Parameters:**
+    - Specify `Book` as the entity type and `UUID` as the primary key type.
+
+- **Inheritance:**
+    - Ensure that the interface inherits standard CRUD operations from `JpaRepository`.
+
+***
+
+## Requirements for `Author` Repository Interface:
+
+- **Repository Definition:**
+    - Define the `AuthorRepository` interface to extend `JpaRepository`.
+    - Annotate the interface with `@Repository` to designate it as a repository.
+
+- **Type Parameters:**
+    - Specify `Author` as the entity type and `UUID` as the primary key type.
+
+- **Inheritance:**
+    - Ensure that the interface inherits standard CRUD operations from `JpaRepository`.
+
+***
+
+## Requirements for `Publisher` Repository Interface:
+
+- **Repository Definition:**
+    - Define the `PublisherRepository` interface to extend `JpaRepository`.
+    - Annotate the interface with `@Repository` to designate it as a repository.
+
+- **Type Parameters:**
+    - Specify `Publisher` as the entity type and `UUID` as the primary key type.
+
+- **Inheritance:**
+    - Ensure that the interface inherits standard CRUD operations from `JpaRepository`.
+
+***
+
+## Requirements for `LegalDeposit` Repository Interface:
+
+- **Repository Definition:**
+    - Define the `LegalDepositRepository` interface to extend `JpaRepository`.
+    - Annotate the interface with `@Repository` to designate it as a repository.
+
+- **Type Parameters:**
+    - Specify `LegalDeposit` as the entity type and `UUID` as the primary key type.
+
+- **Inheritance:**
+    - Ensure that the interface inherits standard CRUD operations from `JpaRepository`.
+
+***
+
+## Requirements for `BookService` Class:
+
+- **Class Definition and Annotations:**
+    - Define the `BookService` class as a service to provide business logic for handling books;
+    - Annotate the class with `@Service` to designate it as a service layer component.
+
+- **Autowired Repositories:**
+    - Use `@Autowired` to inject the `BookRepository`, `AuthorRepository`, `PublisherRepository`, and
+      `LegalDepositRepository` dependencies into the class.
+
+- **Transactional Methods:**
+    - Annotate methods with `@Transactional` to manage database transactions.
+
+- **Create Method:**
+    - Method `create(@Valid BookRequestDTO dto)`:
+        - Fetch the `Publisher` entity using the `publisherId` from the DTO. If not found, throw
+          `IllegalArgumentException` with the message `BookstoreMessages.PUBLISHER_NOT_FOUND`;
+        - Retrieve the set of `Author` entities using the `authorIds` from the DTO. If no authors are found, throw
+          `IllegalArgumentException` with the message `BookstoreMessages.AT_LEAST_ONE_AUTHOR_REQUIRED`;
+        - Create a new `Book` entity using the DTO, the retrieved publisher, authors, and set `legalDeposit` to `null`;
+        - Save the `Book` entity to the repository;
+        - Create and save a `LegalDeposit` entity using the DTO's `depositCodeRegistration` and `country`, and associate
+          it with the saved `Book` entity;
+        - Update the `Book` entity with the saved `LegalDeposit` and persist the changes.
+
+- **Read All Method:**
+    - Method `readAll()`:
+        - Annotate with `@Transactional(readOnly = true)` to fetch all books from the repository;
+        - Map the list of `Book` entities to `BookResponseDTO` and return the list.
+
+- **Read One Method:**
+    - Method `readOne(UUID id)`:
+        - Annotate with `@Transactional(readOnly = true)` to fetch a single book by its `id` from the repository;
+        - If the book is not found, throw `IllegalArgumentException` with the message
+          `BookstoreMessages.BOOK_NOT_FOUND`;
+        - Map the `Book` entity to `BookResponseDTO` and return it.
+
+- **Update Method:**
+    - Method `update(UUID id, @Valid BookRequestDTO dto)`:
+        - Fetch the existing `Book` entity by its `id` from the repository. If not found, throw
+          `IllegalArgumentException` with the message `BookstoreMessages.BOOK_NOT_FOUND`;
+        - Retrieve the `Publisher` entity using the `publisherId` from the DTO. If not found, throw
+          `IllegalArgumentException` with the message `BookstoreMessages.PUBLISHER_NOT_FOUND`;
+        - Retrieve the set of `Author` entities using the `authorIds` from the DTO. If no authors are found, throw
+          `IllegalArgumentException` with the message `BookstoreMessages.AT_LEAST_ONE_AUTHOR_REQUIRED`;
+        - Update the `Book` entity's attributes with the values from the DTO;
+        - Update or create a `LegalDeposit` entity, associate it with the `Book` entity, and persist the changes;
+        - Save the updated `Book` entity to the repository and return the mapped `BookResponseDTO`.
+
+- **Delete Method:**
+    - Method `delete(UUID id)`:
+        - If the book does not exist by its `id`, throw `IllegalArgumentException` with the message
+          `BookstoreMessages.BOOK_NOT_FOUND`;
+        - Delete the book by its `id` from the repository.
+
+- **Helper Methods:**
+    - Include private helper methods to facilitate entity retrieval and validation as necessary.
+
+- **Exception Handling:**
+    - Ensure that exceptions thrown are appropriate and carry meaningful messages for failed operations.
+
+***
+
+## Requirements for `BookController` Class:
+
+- **Class Definition and Annotations:**
+    - Define the `BookController` class to handle HTTP requests related to books;
+    - Annotate the class with `@RestController` to designate it as a RESTful web service;
+    - Use `@RequestMapping("/bookstore/books")` to set the base URL path for book-related endpoints;
+    - Apply `@CrossOrigin(origins = "*", maxAge = 3600)` to allow cross-origin requests.
+
+- **Autowired Service:**
+    - Use `@Autowired` to inject the `BookService` dependency into the class.
+
+- **Create Endpoint:**
+    - Endpoint: `@PostMapping`:
+        - Define a method `create(@RequestBody BookRequestDTO dto)` to handle HTTP POST requests for creating a new
+          book;
+        - Return a `ResponseEntity<BookResponseDTO>` with HTTP status `HttpStatus.CREATED` and the created book data.
+
+- **Read All Endpoint:**
+    - Endpoint: `@GetMapping`:
+        - Define a method `readAll()` to handle HTTP GET requests for retrieving all books;
+        - Return a `ResponseEntity<List<BookResponseDTO>>` with HTTP status `HttpStatus.OK` and the list of all books.
+
+- **Read One Endpoint:**
+    - Endpoint: `@GetMapping(value = "/{id}")`:
+        - Define a method `readOne(@PathVariable UUID id)` to handle HTTP GET requests for retrieving a single book by
+          its `id`;
+        - Return a `ResponseEntity<BookResponseDTO>` with HTTP status `HttpStatus.OK` and the requested book data.
+
+- **Update Endpoint:**
+    - Endpoint: `@PutMapping(value = "/{id}")`:
+        - Define a method `update(@PathVariable UUID id, @RequestBody BookRequestDTO dto)` to handle HTTP PUT requests
+          for updating an existing book;
+        - Return a `ResponseEntity<BookResponseDTO>` with HTTP status `HttpStatus.OK` and the updated book data.
+
+- **Delete Endpoint:**
+    - Endpoint: `@DeleteMapping(value = "/{id}")`:
+        - Define a method `delete(@PathVariable UUID id)` to handle HTTP DELETE requests for deleting an existing book
+          by its `id`;
+        - Return a `ResponseEntity<Void>` with HTTP status `HttpStatus.NO_CONTENT`.
+
+- **HTTP Status Codes:**
+    - Ensure that the correct HTTP status codes are used for each operation:
+        - `HttpStatus.CREATED` (201) for successful creation;
+        - `HttpStatus.OK` (200) for successful retrieval and updates;
+        - `HttpStatus.NO_CONTENT` (204) for successful deletion.
+
+***
+
+## Requirements for `BookstoreMessages` Utility Class:
+
+- **Class Definition and Annotations:**
+    - Define the `BookstoreMessages` class as a utility class to store constant message strings;
+    - Use `private` constructor and throw `IllegalStateException` with the message "Utility class" to prevent
+      instantiation.
+
+- **Book Messages:**
+    - Declare the following public static final string constants:
+        - `BOOK_NOT_FOUND`: "Book not found";
+        - `BOOK_SAVED_SUCCESSFULLY`: "Book saved successfully!".
+
+- **Publisher Messages:**
+    - Declare the following public static final string constant:
+        - `PUBLISHER_NOT_FOUND`: "Publisher not found".
+
+- **Author Messages:**
+    - Declare the following public static final string constant:
+        - `AT_LEAST_ONE_AUTHOR_REQUIRED`: "At least one author is required".
+
+- **Best Practices:**
+    - Ensure that all string constants are publicly accessible and final to prevent modification;
+    - Use descriptive and meaningful names for constants to reflect the associated messages;
+    - Maintain a clear separation of concerns by grouping messages based on their context (e.g., book, publisher,
+      author).
