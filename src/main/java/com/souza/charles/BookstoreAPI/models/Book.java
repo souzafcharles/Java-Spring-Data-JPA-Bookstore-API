@@ -1,5 +1,6 @@
 package com.souza.charles.BookstoreAPI.models;
 
+import com.souza.charles.BookstoreAPI.dtos.BookRequestDTO;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -18,15 +19,20 @@ public class Book implements Serializable {
 
     @Column(nullable = false, unique = true)
     private String title;
+
     @Column(nullable = false, unique = true)
     private String isbn;
+
     @Column(nullable = false)
     private Integer pages;
+
     @Column(nullable = false, unique = true)
     private String language;
 
-    @ManyToMany()
-    @JoinTable(name = "tb_book_author", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "author_id"))
+    @ManyToMany
+    @JoinTable(name = "tb_book_author",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<Author> authors = new HashSet<>();
 
     @ManyToOne
@@ -38,6 +44,18 @@ public class Book implements Serializable {
 
     public Book() {
     }
+
+    public Book(BookRequestDTO data, Publisher publisher, Set<Author> authors, LegalDeposit legalDeposit) {
+        this.id = data.id();
+        this.title = data.title();
+        this.isbn = data.isbn();
+        this.pages = data.pages();
+        this.language = data.language();
+        this.publisher = publisher;
+        this.authors = authors;
+        this.legalDeposit = legalDeposit;
+    }
+
 
     public UUID getId() {
         return id;
@@ -73,6 +91,10 @@ public class Book implements Serializable {
 
     public Set<Author> getAuthors() {
         return authors;
+    }
+
+    public void setAuthors(Set<Author> authors) {
+        this.authors = authors;
     }
 
     public String getLanguage() {
