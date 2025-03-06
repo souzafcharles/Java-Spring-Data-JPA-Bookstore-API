@@ -8,7 +8,7 @@ public class BookstoreMessages {
 
     // Book Messages
     public static final String BOOK_NOT_FOUND = "Book not found";
-    public static final String BOOK_SAVED_SUCCESSFULLY = "Book saved successfully!";
+    public static final String BOOK_DELETE_SUCCESSFULLY = "Book delete successfully!";
 
     // Publisher Messages
     public static final String PUBLISHER_NOT_FOUND = "Publisher not found";

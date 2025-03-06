@@ -3,6 +3,7 @@ package com.souza.charles.BookstoreAPI.controllers;
 import com.souza.charles.BookstoreAPI.dtos.BookRequestDTO;
 import com.souza.charles.BookstoreAPI.dtos.BookResponseDTO;
 import com.souza.charles.BookstoreAPI.services.BookService;
+import com.souza.charles.BookstoreAPI.utils.BookstoreMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +42,8 @@ public class BookController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<String> delete(@PathVariable UUID id) {
         bookService.delete(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK).body(BookstoreMessages.BOOK_DELETE_SUCCESSFULLY);
     }
 }
